@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analytics — PTM Uganda</title>
+<meta name="description" content="Traffic flow, violation and revenue analytics for the PTM network with today / 7-day / 30-day / custom ranges.">
+<link rel="stylesheet" href="assets/css/ptm.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><clipPath id='c'><rect width='32' height='32' rx='8'/></clipPath></defs><g clip-path='url(%23c)'><rect width='32' height='6' y='0' fill='%23151515'/><rect width='32' height='6' y='5' fill='%23fcdc04'/><rect width='32' height='6' y='11' fill='%23d90000'/><rect width='32' height='6' y='16' fill='%23151515'/><rect width='32' height='6' y='21' fill='%23fcdc04'/><rect width='32' height='6' y='27' fill='%23d90000'/></g><text x='16' y='21' font-family='monospace' font-size='11' font-weight='bold' text-anchor='middle' fill='%23fff' stroke='%23000' stroke-width='0.8'>PTM</text></svg>">
+</head>
+<body>
+<div id="nav-mount"></div>
+
+<main>
+  <section class="section-tight">
+    <div class="wrap-wide">
+      <div class="row-between" style="flex-wrap:wrap;gap:18px">
+        <div>
+          <div class="eyebrow">Traffic Intelligence</div>
+          <h1 class="h1" style="margin:10px 0 8px">Analytics</h1>
+          <p class="lead" style="margin:0">Flow, violation, detection-quality and revenue trends aggregated from the simulated network. Switch range to re-cut every chart.</p>
+        </div>
+        <div class="row" style="gap:10px;flex-wrap:wrap">
+          <div class="btn-group" id="range-group">
+            <button data-range="today" class="active">TODAY</button>
+            <button data-range="7">7 DAYS</button>
+            <button data-range="30">30 DAYS</button>
+            <button data-range="custom">CUSTOM</button>
+          </div>
+          <input type="date" class="input" id="from" style="max-width:160px;display:none">
+          <input type="date" class="input" id="to" style="max-width:160px;display:none">
+        </div>
+      </div>
+
+      <div class="kpi-strip" id="a-kpis" style="margin-top:26px"></div>
+
+      <div class="grid" style="grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);margin-top:22px;align-items:start" id="row1">
+        <div class="glass card">
+          <div class="panel-head" style="margin:-22px -22px 16px"><span class="panel-title">Vehicle &amp; motorcycle flow</span><span class="badge badge-gold" id="flow-badge">per hour</span></div>
+          <div class="chart-box" id="ch-flow"></div>
+        </div>
+        <div class="glass card">
+          <div class="panel-head" style="margin:-22px -22px 16px"><span class="panel-title">Case outcome mix</span></div>
+          <div class="chart-box" id="ch-status" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap"></div>
+        </div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:20px;align-items:start" id="row2">
+        <div class="glass card">
+          <div class="panel-head" style="margin:-22px -22px 16px"><span class="panel-title">Violations by type</span></div>
+          <div class="chart-box" id="ch-type"></div>
+        </div>
+        <div class="glass card">
+          <div class="panel-head" style="margin:-22px -22px 16px"><span class="panel-title">Violations by location</span></div>
+          <div class="chart-box" id="ch-loc"></div>
+        </div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:20px;align-items:start" id="row3">
+        <div class="glass card">
+          <div class="panel-head" style="margin:-22px -22px 16px"><span class="panel-title">Detection confidence trend</span></div>
+          <div class="chart-box" id="ch-conf"></div>
+        </div>
+        <div class="glass card">
+          <div class="panel-head" style="margin:-22px -22px 16px"><span class="panel-title">Fines collected</span></div>
+          <div class="chart-box" id="ch-rev"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="footer-mount"></div>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/analytics.js"></script>
+</body>
+</html>

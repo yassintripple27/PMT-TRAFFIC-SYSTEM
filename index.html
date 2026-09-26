@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PTM traffic management </title>
+<meta name="description" content="PTM is an AI and IoT traffic management platform for Uganda: smart cameras, automatic number plate recognition, violation detection, evidence management and real-time police operations.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/ptm.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><clipPath id='c'><rect width='32' height='32' rx='8'/></clipPath></defs><g clip-path='url(%23c)'><rect width='32' height='6' y='0' fill='%23151515'/><rect width='32' height='6' y='5' fill='%23fcdc04'/><rect width='32' height='6' y='11' fill='%23d90000'/><rect width='32' height='6' y='16' fill='%23151515'/><rect width='32' height='6' y='21' fill='%23fcdc04'/><rect width='32' height='6' y='27' fill='%23d90000'/></g><text x='16' y='21' font-family='monospace' font-size='11' font-weight='bold' text-anchor='middle' fill='%23fff' stroke='%23000' stroke-width='0.8'>PTM</text></svg>">
+</head>
+<body>
+
+<!-- ============ LOADING SCREEN ============ -->
+<div id="loader">
+  <div class="loader-media" aria-hidden="true">
+    <div class="loader-frame on" data-src="assets/img/president-splash.png" data-pos="left center"></div>
+    <div class="loader-frame" data-src="assets/img/president-banner.png" data-pos="right center"></div>
+    <div class="loader-frame" data-src="assets/img/president-office.png" data-pos="left center"></div>
+    <div class="loader-frame" data-src="assets/img/president-project.png" data-pos="center center"></div>
+    <div class="loader-frame" data-src="assets/img/uganda-flag.jpg" data-pos="center center"></div>
+  </div>
+  <div class="loader-scrim" aria-hidden="true"></div>
+  <div class="loader-flagstrip" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="loader-grid-bg"></div>
+  <div class="loader-scan"></div>
+  <div class="loader-inner">
+    <div class="loader-brand">
+      <div class="loader-mark">PTM</div>
+      <div>
+        <div class="loader-title">PTM</div>
+        <div class="loader-sub">Police Traffic Management</div>
+      </div>
+    </div>
+    <div class="loader-tag">&ldquo;Smart Traffic. Safer Roads. Better Uganda.&rdquo;</div>
+    <div class="loader-bar-track"><div class="loader-bar" id="loader-bar"></div></div>
+    <div class="loader-msg" id="loader-msg">Initializing Smart Traffic Infrastructure...</div>
+    <div class="loader-pct" id="loader-pct">0% • 1/7</div>
+    <div class="loader-log" id="loader-log"></div>
+    <div class="loader-quote">
+      <div class="loader-quote-text">&ldquo;Development is not an event, it is a process.&rdquo;</div>
+      <div class="loader-quote-by">
+        <img src="assets/img/uganda-flag.jpg" alt="Flag of Uganda" class="loader-flagchip">
+        <span><b>H.E. Yoweri Kaguta Museveni</b><br>President of the Republic of Uganda</span>
+      </div>
+    </div>
+    <div class="loader-note">National public-context visual &middot; no endorsement implied &middot; simulated demonstration prototype</div>
+  </div>
+</div>
+
+<div id="nav-mount"></div>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-bg"><canvas id="hero-canvas"></canvas></div>
+  <div class="wrap hero-inner">
+    <div class="eyebrow fade-in">
+      <span style="width:6px;height:6px;border-radius:50%;background:currentColor"></span>
+      Republic of Uganda · National Traffic Intelligence Prototype
+    </div>
+
+    <div class="hero-flag fade-in d1" style="margin-top:26px"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+    <h1 class="display fade-in d1" style="margin-top:22px;max-width:19ch">
+      AI-POWERED<br><span class="gold-text">TRAFFIC MANAGEMENT</span><br>FOR UGANDA
+    </h1>
+
+    <div class="fade-in d2" style="margin-top:22px;font-size:clamp(1rem,1.9vw,1.5rem);font-weight:700;letter-spacing:0.24em;text-transform:uppercase;color:#fff">
+      Detect. <span style="color:var(--gold)">Monitor.</span> Analyze. <span style="color:var(--gold)">Respond.</span>
+    </div>
+
+    <p class="lead fade-in d3" style="margin-top:20px">
+      PTM combines AI traffic cameras, IoT devices, real-time video monitoring, automatic number plate
+      recognition and intelligent traffic analysis to support safer and smarter roads across Uganda.
+    </p>
+
+    <div class="hero-actions fade-in d3">
+      <a class="btn btn-gold" href="command-center.html">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Enter Command Center
+      </a>
+      <a class="btn btn-outline" href="cameras.html">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M4 7h11v10H4zm11 3l5-3v10l-5-3z"/></svg>
+        Live Traffic
+      </a>
+      <a class="btn btn-ghost" href="police.html">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M12 3l7 3v5.5c0 4.4-3 8.2-7 9.5-4-1.3-7-5.1-7-9.5V6l7-3z"/></svg>
+        Police Dashboard
+      </a>
+    </div>
+
+    <div class="hero-stats fade-in d4">
+      <div class="hero-stat"><b data-count="248">0</b><span>Cameras connected</span></div>
+      <div class="hero-stat"><b data-count="17">0</b><span>Districts covered</span></div>
+      <div class="hero-stat"><b data-count="204">0</b><span>IoT devices online</span></div>
+      <div class="hero-stat"><b data-count="9">0</b><span>AI vision modules</span></div>
+    </div>
+
+    <div class="notice fade-in d4" style="margin-top:30px;max-width:760px">
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M12 2L1 21h22L12 2zm1 14h-2v2h2v-2zm0-7h-2v5h2V9z"/></svg>
+      <div>
+        <b>Demonstration prototype.</b> Every camera feed, detection, plate, incident and fine shown on this
+        site is generated locally by the PTM simulation engine. No live Ugandan government or police camera
+        is accessed, and no real personal data is displayed.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LIVE STATS STRIP ============ -->
+<section class="section-tight">
+  <div class="wrap-wide">
+    <div class="kpi-strip" id="home-kpis"></div>
+  </div>
+</section>
+
+<!-- ============ SYSTEM PURPOSE ============ -->
+<section class="section" id="platform">
+  <div class="wrap">
+    <div class="row-between" style="align-items:flex-end;flex-wrap:wrap;gap:22px;margin-bottom:36px">
+      <div>
+        <span class="eyebrow">System Purpose</span>
+        <h2 class="h1" style="margin-top:18px;max-width:24ch">One platform for the whole <span class="gold-text">traffic lifecycle</span></h2>
+      </div>
+      <p class="lead" style="max-width:46ch;margin:0">
+        PTM monitors roads through smart cameras and IoT devices, detects vehicles and motorcycles,
+        reads number plates, identifies configured violations, secures evidence, manages penalties and
+        gives authorised officers real-time access.
+      </p>
+    </div>
+
+    <div class="feature-grid" id="feature-grid"></div>
+  </div>
+</section>
+
+<!-- ============ OPERATIONAL FLOW ============ -->
+<section class="section" style="background:rgba(255,255,255,0.014);border-block:1px solid var(--stroke)">
+  <div class="wrap">
+    <div class="center" style="margin-bottom:44px">
+      <span class="eyebrow">End-to-end workflow</span>
+      <h2 class="h1" style="margin-top:18px">From detection to <span class="gold-text">case closed</span></h2>
+      <p class="lead center" style="margin:14px auto 0">
+        Every verified event follows the same auditable path. Uncertain AI predictions are always routed
+        to a human verifier before any enforcement action is taken.
+      </p>
+    </div>
+    <div class="flow" id="flow"></div>
+  </div>
+</section>
+
+<!-- ============ AI ENGINE ============ -->
+<section class="section" id="ai">
+  <div class="wrap">
+    <div class="grid" style="grid-template-columns:1fr;gap:40px">
+      <div class="center">
+        <span class="eyebrow">PTM AI Engine</span>
+        <h2 class="h1" style="margin-top:18px">Nine vision modules, <span class="gold-text">one inference pipeline</span></h2>
+      </div>
+      <div class="feature-grid" id="ai-modules"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ IoT / EMBEDDED ============ -->
+<section class="section" style="background:rgba(255,255,255,0.014);border-block:1px solid var(--stroke)">
+  <div class="wrap">
+    <div class="grid" style="grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr);gap:44px;align-items:center" class="iot-split">
+      <div>
+        <span class="eyebrow">IoT &amp; Embedded Layer</span>
+        <h2 class="h1" style="margin-top:18px">C-programmed edge devices,<br><span class="gold-text">cloud-grade intelligence</span></h2>
+        <p class="lead" style="margin-top:16px">
+          Road-side units run a lean C/C++ firmware that captures frames, reads radar and inductive-loop
+          sensors, pre-filters motion, then publishes over MQTT to the PTM server where the heavy AI
+          pipeline runs. This keeps bandwidth low and lets a camera keep operating if the network drops.
+        </p>
+        <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-top:24px;gap:12px">
+          <div class="glass-soft" style="padding:15px"><div class="tiny muted-2" style="letter-spacing:.14em;font-weight:700">FIRMWARE</div><div class="small" style="margin-top:5px">C / C++ · bare-metal + RTOS</div></div>
+          <div class="glass-soft" style="padding:15px"><div class="tiny muted-2" style="letter-spacing:.14em;font-weight:700">TRANSPORT</div><div class="small" style="margin-top:5px">MQTT over TLS 1.3</div></div>
+          <div class="glass-soft" style="padding:15px"><div class="tiny muted-2" style="letter-spacing:.14em;font-weight:700">INGEST</div><div class="small" style="margin-top:5px">REST API · WebSockets</div></div>
+          <div class="glass-soft" style="padding:15px"><div class="tiny muted-2" style="letter-spacing:.14em;font-weight:700">STORAGE</div><div class="small" style="margin-top:5px">Encrypted evidence vault</div></div>
+        </div>
+        <div style="margin-top:26px;display:flex;gap:10px;flex-wrap:wrap">
+          <a class="btn btn-outline btn-sm" href="iot.html">View IoT Infrastructure</a>
+          <a class="btn btn-ghost btn-sm" href="ai-detection.html">See AI Detection</a>
+        </div>
+      </div>
+      <div class="glass" style="padding:32px">
+        <div class="panel-title" style="margin-bottom:22px;color:var(--gold)">Data Flow Architecture</div>
+        <div class="flow" id="iot-flow"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ UGANDA MAP TEASER ============ -->
+<section class="section" id="coverage">
+  <div class="wrap">
+    <div class="grid" style="grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:40px;align-items:center">
+      <div>
+        <span class="eyebrow">National Coverage</span>
+        <h2 class="h1" style="margin-top:18px">Connected across <span class="gold-text">Uganda</span></h2>
+        <p class="lead" style="margin-top:16px">
+          Camera corridors are configured for Kampala, Entebbe, Jinja, Mbarara, Mbale, Gulu, Fort Portal,
+          Masaka, Arua, Kabale and other connected regions. Each marker reports live status, congestion and
+          incident activity to the command center.
+        </p>
+        <div class="stat-grid" style="margin-top:26px">
+          <div class="stat"><div class="stat-value gold-text" data-count="231">0</div><div class="stat-label">Cameras online</div></div>
+          <div class="stat"><div class="stat-value" style="color:var(--red)" data-count="24">0</div><div class="stat-label">Active incidents</div></div>
+        </div>
+        <div style="margin-top:26px">
+          <a class="btn btn-gold btn-sm" href="map.html">Open Uganda Traffic Map</a>
+        </div>
+      </div>
+      <div class="map-shell" id="map-teaser" style="aspect-ratio:1000/700"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECURITY ============ -->
+<section class="section" style="background:rgba(255,255,255,0.014);border-block:1px solid var(--stroke)">
+  <div class="wrap">
+    <div class="center" style="margin-bottom:38px">
+      <span class="eyebrow">Security &amp; Governance</span>
+      <h2 class="h1" style="margin-top:18px">Built for <span class="gold-text">accountable</span> enforcement</h2>
+    </div>
+    <div class="feature-grid" id="security-grid"></div>
+    <div class="notice blue" style="margin-top:30px;max-width:900px;margin-inline:auto">
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M12 3l7 3v5.5c0 4.4-3 8.2-7 9.5-4-1.3-7-5.1-7-9.5V6l7-3z"/></svg>
+      <div>
+        <b>Human-in-the-loop by design.</b> PTM never issues a penalty from an unverified AI prediction alone.
+        Detections below the configured confidence threshold are marked <span class="mono badge badge-pending" style="margin-inline:4px">PENDING VERIFICATION</span>
+        and require an authorised officer to review the evidence before a case is opened. Every evidence view
+        is written to the audit log.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="section">
+  <div class="wrap">
+    <div class="glass card-pad-lg center" style="padding:64px 30px;position:relative;overflow:hidden">
+      <div style="position:absolute;inset:0;background:radial-gradient(700px 300px at 50% 0%,rgba(255,201,60,.14),transparent 70%);pointer-events:none"></div>
+      <div style="position:relative">
+        <div class="hero-flag" style="margin:0 auto 26px"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <h2 class="display" style="font-size:clamp(1.8rem,4.6vw,3.4rem)">BUILDING SAFER ROADS<br><span class="gold-text">FOR UGANDA</span></h2>
+        <p class="lead center" style="margin:22px auto 0;max-width:62ch">
+          PTM connects AI, IoT, smart cameras, police operations and traffic intelligence into one
+          unified traffic management platform.
+        </p>
+        <div style="margin-top:34px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <a class="btn btn-gold" href="command-center.html">Enter PTM Command Center &rarr;</a>
+          <a class="btn btn-ghost" href="cameras.html">View Live Cameras</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="footer-mount"></div>
+
+<script src="assets/js/traffic-sim.js"></script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/home.js"></script>
+</body>
+</html>

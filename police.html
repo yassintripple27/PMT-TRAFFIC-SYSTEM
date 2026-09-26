@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Police Operations — PTM Uganda</title>
+<meta name="description" content="Secure police access to PTM: officer login with two-factor authentication, role-scoped incident monitoring and dispatch.">
+<link rel="stylesheet" href="assets/css/ptm.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><clipPath id='c'><rect width='32' height='32' rx='8'/></clipPath></defs><g clip-path='url(%23c)'><rect width='32' height='6' y='0' fill='%23151515'/><rect width='32' height='6' y='5' fill='%23fcdc04'/><rect width='32' height='6' y='11' fill='%23d90000'/><rect width='32' height='6' y='16' fill='%23151515'/><rect width='32' height='6' y='21' fill='%23fcdc04'/><rect width='32' height='6' y='27' fill='%23d90000'/></g><text x='16' y='21' font-family='monospace' font-size='11' font-weight='bold' text-anchor='middle' fill='%23fff' stroke='%23000' stroke-width='0.8'>PTM</text></svg>">
+</head>
+<body>
+<div id="nav-mount"></div>
+
+<main>
+  <!-- ============ LOGIN ============ -->
+  <section class="login-shell" id="login-shell">
+    <div class="glass login-card">
+      <div class="login-lock" id="login-lock"></div>
+      <h1 class="h2" style="margin:16px 0 6px">Police Secure Access</h1>
+      <p class="small muted" style="margin:0 0 22px;line-height:1.6">Sign in with your officer ID, password and a 6-digit code from your authenticator. Access is scoped to your role and every action is audit-logged.</p>
+
+      <div class="col" style="gap:14px">
+        <div class="field">
+          <label for="officer">Officer ID</label>
+          <input class="input mono" id="officer" placeholder="OF-20000" autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input class="input" id="password" type="password" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <div class="field">
+          <label>Two factor code</label>
+          <div class="otp-row" id="otp-row">
+            <input class="mono" maxlength="1" inputmode="numeric"><input class="mono" maxlength="1" inputmode="numeric"><input class="mono" maxlength="1" inputmode="numeric"><input class="mono" maxlength="1" inputmode="numeric"><input class="mono" maxlength="1" inputmode="numeric"><input class="mono" maxlength="1" inputmode="numeric">
+          </div>
+        </div>
+        <div class="notice" id="login-err" style="display:none"></div>
+        <button class="btn btn-gold btn-block" id="signin">Authenticate</button>
+        <p class="tiny muted-2" style="margin:0;text-align:center">Demo credentials: any listed officer ID (e.g. <span class="mono">Yassin27</span>), any 4+ character password, OTP <span class="mono">2727</span> or any code starting <span class="mono">2727</span>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section class="section-tight" id="dash" style="display:none">
+    <div class="wrap-wide">
+      <div class="row-between" style="flex-wrap:wrap;gap:16px">
+        <div>
+          <div class="eyebrow">Operations</div>
+          <h1 class="h1" style="margin:10px 0 6px" id="dash-title">Police Dashboard</h1>
+          <p class="small muted" style="margin:0" id="dash-sub"></p>
+        </div>
+        <div class="row" style="gap:10px">
+          <span class="badge badge-gold" id="dash-role"></span>
+          <button class="btn btn-outline btn-sm" id="signout">Sign out</button>
+        </div>
+      </div>
+
+      <div class="kpi-strip" id="p-kpis" style="margin-top:24px"></div>
+
+      <div class="grid" style="grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);margin-top:22px;align-items:start">
+        <div class="glass">
+          <div class="panel-head"><span class="panel-title">Live incident monitor</span><span class="badge badge-live"><span class="dot"></span>LIVE</span></div>
+          <div class="alert-list" id="inc-list" style="max-height:520px"></div>
+        </div>
+        <div class="col">
+          <div class="glass card">
+            <div class="panel-title" style="margin-bottom:12px">My queue</div>
+            <div id="my-queue"></div>
+          </div>
+          <div class="glass card">
+            <div class="panel-title" style="margin-bottom:12px">Cases awaiting verification</div>
+            <div id="verify-queue"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="footer-mount"></div>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/police.js"></script>
+</body>
+</html>

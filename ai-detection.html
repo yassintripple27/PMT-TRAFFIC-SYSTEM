@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Detection — PTM Uganda</title>
+<meta name="description" content="PTM computer-vision stack: detection classes, ANPR pipeline, confidence thresholds and human-in-the-loop verification.">
+<link rel="stylesheet" href="assets/css/ptm.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><clipPath id='c'><rect width='32' height='32' rx='8'/></clipPath></defs><g clip-path='url(%23c)'><rect width='32' height='6' y='0' fill='%23151515'/><rect width='32' height='6' y='5' fill='%23fcdc04'/><rect width='32' height='6' y='11' fill='%23d90000'/><rect width='32' height='6' y='16' fill='%23151515'/><rect width='32' height='6' y='21' fill='%23fcdc04'/><rect width='32' height='6' y='27' fill='%23d90000'/></g><text x='16' y='21' font-family='monospace' font-size='11' font-weight='bold' text-anchor='middle' fill='%23fff' stroke='%23000' stroke-width='0.8'>PTM</text></svg>">
+</head>
+<body>
+<div id="nav-mount"></div>
+
+<main>
+  <section class="section-tight">
+    <div class="wrap-wide">
+      <div class="row-between" style="flex-wrap:wrap;gap:18px">
+        <div>
+          <div class="eyebrow">Computer Vision</div>
+          <h1 class="h1" style="margin:10px 0 8px">AI Detection &amp; ANPR</h1>
+          <p class="lead" style="margin:0">Nine vision modules run on every feed: detection, classification, tracking, plate recognition, behaviour analysis and evidence capture. Detections below the enforcement confidence threshold are never actioned automatically — they are queued for human verification.</p>
+        </div>
+        <span class="badge badge-sim">SIMULATED INFERENCE</span>
+      </div>
+
+      <div class="grid" style="grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);margin-top:26px" id="demo-grid">
+        <div class="glass card">
+          <div class="panel-head" style="margin:-22px -22px 16px"><span class="panel-title">Live inference preview</span><span class="badge badge-live"><span class="dot"></span>RUNNING</span></div>
+          <div class="stage" style="aspect-ratio:16/9;position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--stroke)">
+            <canvas id="ai-canvas"></canvas>
+            <div class="cctv-fx"></div>
+          </div>
+          <div class="row" style="flex-wrap:wrap;gap:10px;margin-top:14px">
+            <label class="row small" style="gap:8px;cursor:pointer"><span class="switch"><input type="checkbox" id="toggle-boxes" checked><span></span></span> Bounding boxes</label>
+            <label class="row small" style="gap:8px;cursor:pointer"><span class="switch"><input type="checkbox" id="toggle-labels" checked><span></span></span> Labels &amp; plates</label>
+            <label class="row small" style="gap:8px;cursor:pointer"><span class="switch"><input type="checkbox" id="toggle-lanes" checked><span></span></span> Lane guides</label>
+            <span class="spacer"></span>
+            <span class="small muted mono" id="ai-fps"></span>
+          </div>
+        </div>
+        <div class="col">
+          <div class="glass card">
+            <div class="panel-title" style="margin-bottom:12px">Current frame detections</div>
+            <div class="table-wrap" style="max-height:280px;overflow-y:auto">
+              <table class="data">
+                <thead><tr><th>Class</th><th>Conf</th><th>Plate</th><th>Speed</th></tr></thead>
+                <tbody id="det-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="glass card">
+            <div class="panel-title" style="margin-bottom:12px">Enforcement threshold</div>
+            <p class="small muted" style="margin:0 0 12px;line-height:1.6">A detection becomes an enforceable case only when its confidence meets the rule threshold <b class="mono" style="color:#fff">and</b> an authorised officer verifies it. Anything uncertain is marked <span class="badge badge-pending">PENDING VERIFICATION</span>.</p>
+            <div id="threshold-bars"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight" style="padding-top:10px">
+    <div class="wrap-wide">
+      <div class="eyebrow">Detection classes</div>
+      <h2 class="h2" style="margin:10px 0 18px">What the vision stack recognises</h2>
+      <div class="feature-grid" id="classes-grid"></div>
+    </div>
+  </section>
+
+  <section class="section-tight" style="padding-top:10px">
+    <div class="wrap-wide">
+      <div class="eyebrow">ANPR Pipeline</div>
+      <h2 class="h2" style="margin:10px 0 18px">Automatic number plate recognition</h2>
+      <div class="flow" id="anpr-flow" style="max-width:640px;margin:auto"></div>
+    </div>
+  </section>
+
+  <section class="section-tight" style="padding-top:10px">
+    <div class="wrap-wide">
+      <div class="eyebrow">Engine</div>
+      <h2 class="h2" style="margin:10px 0 18px">Nine AI modules</h2>
+      <div class="feature-grid" id="modules-grid"></div>
+      <div class="notice" style="margin-top:26px">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2L1 21h22L12 2zm1 14h-2v2h2v-2zm0-7h-2v5h2V9z"/></svg>
+        <div>PTM does not automatically punish a person solely from an uncertain AI prediction. Low-confidence detections are flagged for human review, and every verification or dismissal is written to the audit log with the acting officer's identity.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="footer-mount"></div>
+<script src="assets/js/traffic-sim.js"></script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/ai.js"></script>
+</body>
+</html>

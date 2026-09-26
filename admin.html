@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Console — PTM Uganda</title>
+<meta name="description" content="PTM administration: users and roles, camera and device management, configurable violation rules, reports, audit log and settings.">
+<link rel="stylesheet" href="assets/css/ptm.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><clipPath id='c'><rect width='32' height='32' rx='8'/></clipPath></defs><g clip-path='url(%23c)'><rect width='32' height='6' y='0' fill='%23151515'/><rect width='32' height='6' y='5' fill='%23fcdc04'/><rect width='32' height='6' y='11' fill='%23d90000'/><rect width='32' height='6' y='16' fill='%23151515'/><rect width='32' height='6' y='21' fill='%23fcdc04'/><rect width='32' height='6' y='27' fill='%23d90000'/></g><text x='16' y='21' font-family='monospace' font-size='11' font-weight='bold' text-anchor='middle' fill='%23fff' stroke='%23000' stroke-width='0.8'>PTM</text></svg>">
+</head>
+<body>
+<div id="nav-mount"></div>
+
+<main>
+  <section class="section-tight" id="gate" style="display:none">
+    <div class="wrap" style="max-width:640px">
+      <div class="glass card center" style="padding:44px">
+        <div style="color:var(--gold);display:flex;justify-content:center;margin-bottom:14px" id="gate-icon"></div>
+        <h1 class="h2" style="margin:0 0 10px">Authorisation required</h1>
+        <p class="small muted" style="margin:0 0 22px;line-height:1.7">The admin console is restricted to authenticated PTM staff. Sign in with an officer account to continue; your role determines which consoles you can open.</p>
+        <a class="btn btn-gold" href="police.html">Go to secure sign-in</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight" id="console" style="display:none">
+    <div class="wrap-wide">
+      <div class="row-between" style="flex-wrap:wrap;gap:16px">
+        <div>
+          <div class="eyebrow">Administration</div>
+          <h1 class="h1" style="margin:10px 0 6px">Admin Console</h1>
+          <p class="small muted" style="margin:0" id="admin-sub"></p>
+        </div>
+        <span class="badge badge-gold" id="admin-role"></span>
+      </div>
+
+      <div class="tabbar" id="tabs" style="margin-top:24px"></div>
+
+      <!-- USERS -->
+      <div class="tabpane" id="pane-users" style="margin-top:20px">
+        <div class="glass">
+          <div class="panel-head"><span class="panel-title">Officers, roles &amp; access</span><button class="btn btn-gold btn-xs" id="add-user">+ Add officer</button></div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>Officer</th><th>ID</th><th>Role</th><th>Station</th><th>2FA</th><th>Active</th><th>Last login</th><th></th></tr></thead>
+              <tbody id="users-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="glass card" style="margin-top:18px">
+          <div class="panel-title" style="margin-bottom:14px">Role permission matrix</div>
+          <div class="role-grid" id="role-grid"></div>
+        </div>
+      </div>
+
+      <!-- CAMERAS -->
+      <div class="tabpane" id="pane-cameras" style="margin-top:20px">
+        <div class="kpi-strip" id="cam-kpis"></div>
+        <div class="glass" style="margin-top:18px">
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>ID</th><th>Location</th><th>District</th><th>Type</th><th>Status</th><th>Firmware</th><th>Installed</th><th></th></tr></thead>
+              <tbody id="cams-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEVICES -->
+      <div class="tabpane" id="pane-devices" style="margin-top:20px">
+        <div class="kpi-strip" id="dev-kpis"></div>
+        <div class="glass" style="margin-top:18px">
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>Device</th><th>Type</th><th>District</th><th>Protocol</th><th>Power</th><th>Health</th><th></th></tr></thead>
+              <tbody id="devs-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- RULES -->
+      <div class="tabpane" id="pane-rules" style="margin-top:20px">
+        <div class="notice" style="margin-bottom:18px">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2L1 21h22L12 2zm1 14h-2v2h2v-2zm0-7h-2v5h2V9z"/></svg>
+          <div>Penalty amounts are <b>not</b> hard-coded real-world figures. They are configurable by authorised administrators and must be set to match applicable Ugandan regulations before any live deployment.</div>
+        </div>
+        <div class="glass">
+          <div class="panel-head"><span class="panel-title">Violation rules &amp; penalties (UGX)</span><div class="row" style="gap:8px"><button class="btn btn-ghost btn-xs" id="rules-reset">Reset defaults</button><button class="btn btn-gold btn-xs" id="rules-save">Save rules</button></div></div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>Rule</th><th>Enabled</th><th>Severity</th><th>Min confidence</th><th>Penalty (UGX)</th><th>Definition</th></tr></thead>
+              <tbody id="rules-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- FINES -->
+      <div class="tabpane" id="pane-fines" style="margin-top:20px">
+        <div class="kpi-strip" id="fine-kpis"></div>
+        <div class="glass" style="margin-top:18px;padding:18px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+            <h3 style="font-size:0.95rem;font-weight:800;letter-spacing:0.06em">PAYMENT APPROVALS</h3>
+            <span class="muted tiny">Submitted payments stay PENDING until an authorized payment officer approves or rejects them</span>
+          </div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>Case</th><th>Plate</th><th>Method</th><th>Reference</th><th>Amount</th><th>Submitted</th><th></th></tr></thead>
+              <tbody id="pay-approvals"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="glass" style="margin-top:18px">
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>Case</th><th>Plate</th><th>Violation</th><th>Penalty</th><th>Status</th><th>Verified by</th></tr></thead>
+              <tbody id="fines-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORTS -->
+      <div class="tabpane" id="pane-reports" style="margin-top:20px">
+        <div class="grid" style="grid-template-columns:1fr 1fr;align-items:start">
+          <div class="glass card">
+            <div class="panel-title" style="margin-bottom:14px">Violations by type</div>
+            <div class="chart-box" id="rep-type"></div>
+          </div>
+          <div class="glass card">
+            <div class="panel-title" style="margin-bottom:14px">Case outcomes</div>
+            <div class="chart-box" id="rep-status" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap"></div>
+          </div>
+        </div>
+        <div class="row" style="margin-top:18px;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-outline" id="exp-cases">Export cases (CSV)</button>
+          <button class="btn btn-outline" id="exp-audit">Export audit log (CSV)</button>
+          <span class="small muted">Exports are generated client-side from simulated data.</span>
+        </div>
+      </div>
+
+      <!-- AUDIT -->
+      <div class="tabpane" id="pane-audit" style="margin-top:20px">
+        <div class="glass">
+          <div class="panel-head"><span class="panel-title">Audit log</span><span class="small muted mono" id="audit-count"></span></div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>When</th><th>Action</th><th>Actor</th><th>Role</th><th>Detail</th></tr></thead>
+              <tbody id="audit-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="tabpane" id="pane-settings" style="margin-top:20px">
+        <div class="grid" style="grid-template-columns:1fr 1fr;align-items:start">
+          <div class="glass card">
+            <div class="panel-title" style="margin-bottom:14px">Detection &amp; evidence policy</div>
+            <div class="col" style="gap:14px">
+              <div class="field"><label for="set-conf">Enforcement confidence threshold</label><input class="input mono" id="set-conf" type="number" min="50" max="99" step="1"></div>
+              <div class="field"><label for="set-ret">Evidence retention (days)</label><input class="input mono" id="set-ret" type="number" min="7" max="365" step="1"></div>
+              <label class="row small" style="gap:8px;cursor:pointer"><span class="switch"><input type="checkbox" id="set-autocap"><span></span></span> Automatic evidence snapshot on verified violation</label>
+              <label class="row small" style="gap:8px;cursor:pointer"><span class="switch"><input type="checkbox" id="set-human"><span></span></span> Require human verification before any fine is enforceable</label>
+              <button class="btn btn-gold" id="set-save">Save settings</button>
+            </div>
+          </div>
+          <div class="glass card">
+            <div class="panel-title" style="margin-bottom:14px">Session</div>
+            <div id="set-session"></div>
+            <button class="btn btn-danger btn-sm" id="set-clear" style="margin-top:14px">Clear local demo data</button>
+            <p class="tiny muted-2" style="margin:10px 0 0;line-height:1.6">Clears rules, payments, audit log and session from this browser only.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="footer-mount"></div>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

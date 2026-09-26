@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live Cameras — PTM Uganda</title>
+<meta name="description" content="Browse the simulated PTM camera fleet across Uganda: live feeds, status, district coverage and camera detail.">
+<link rel="stylesheet" href="assets/css/ptm.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><clipPath id='c'><rect width='32' height='32' rx='8'/></clipPath></defs><g clip-path='url(%23c)'><rect width='32' height='6' y='0' fill='%23151515'/><rect width='32' height='6' y='5' fill='%23fcdc04'/><rect width='32' height='6' y='11' fill='%23d90000'/><rect width='32' height='6' y='16' fill='%23151515'/><rect width='32' height='6' y='21' fill='%23fcdc04'/><rect width='32' height='6' y='27' fill='%23d90000'/></g><text x='16' y='21' font-family='monospace' font-size='11' font-weight='bold' text-anchor='middle' fill='%23fff' stroke='%23000' stroke-width='0.8'>PTM</text></svg>">
+</head>
+<body>
+<div id="nav-mount"></div>
+
+<main>
+  <section class="section-tight">
+    <div class="wrap-wide">
+      <div class="row-between" style="flex-wrap:wrap;gap:18px">
+        <div>
+          <div class="eyebrow">Live Camera Network</div>
+          <h1 class="h1" style="margin:10px 0 8px">Live Cameras</h1>
+          <p class="lead" style="margin:0">Every feed on this page is a simulated CCTV render. No real government or police camera is connected. Browse the fleet, filter by district or status, and open any unit for a full-size view.</p>
+        </div>
+        <span class="badge badge-sim">SIMULATED FEEDS</span>
+      </div>
+
+      <div class="kpi-strip" id="cam-kpis" style="margin-top:26px"></div>
+
+      <div class="glass card" style="margin-top:18px">
+        <div class="row-between" style="flex-wrap:wrap;gap:14px">
+          <div class="row" style="flex-wrap:wrap;gap:10px;flex:1;min-width:260px">
+            <div class="search-bar" style="max-width:340px">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M10 4a6 6 0 105.2 9l4.3 4.3 1.4-1.4L16.6 11.6A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z"/></svg>
+              <input class="input" id="q" placeholder="Search camera, road or district…">
+            </div>
+            <select class="input" id="district" style="max-width:200px"></select>
+            <div class="btn-group" id="status-group">
+              <button data-status="all" class="active">ALL</button>
+              <button data-status="online">ONLINE</button>
+              <button data-status="offline">OFFLINE</button>
+              <button data-status="congestion">CONGESTED</button>
+            </div>
+          </div>
+          <div class="row" style="gap:10px">
+            <span class="small muted mono" id="result-count"></span>
+            <div class="btn-group" id="grid-group">
+              <button data-grid="6">6</button>
+              <button data-grid="9">9</button>
+              <button data-grid="12" class="active">12</button>
+              <button data-grid="16">16</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wall" id="wall" data-grid="12" style="margin-top:18px"></div>
+      <div class="center" style="margin-top:20px">
+        <button class="btn btn-outline" id="more">Load more cameras</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight" style="padding-top:20px">
+    <div class="wrap-wide">
+      <div class="glass">
+        <div class="panel-head"><span class="panel-title">Camera directory</span><span class="small muted mono" id="dir-count"></span></div>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>ID</th><th>Location</th><th>District</th><th>Type</th><th>Status</th><th>ANPR</th><th>Limit</th><th>Last ping</th><th></th></tr></thead>
+            <tbody id="dir-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="footer-mount"></div>
+<script src="assets/js/traffic-sim.js"></script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/cameras.js"></script>
+</body>
+</html>

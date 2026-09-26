@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IoT Infrastructure — PTM Uganda</title>
+<meta name="description" content="PTM field device inventory, network health and the C/C++ embedded pipeline from sensor to AI service.">
+<link rel="stylesheet" href="assets/css/ptm.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><clipPath id='c'><rect width='32' height='32' rx='8'/></clipPath></defs><g clip-path='url(%23c)'><rect width='32' height='6' y='0' fill='%23151515'/><rect width='32' height='6' y='5' fill='%23fcdc04'/><rect width='32' height='6' y='11' fill='%23d90000'/><rect width='32' height='6' y='16' fill='%23151515'/><rect width='32' height='6' y='21' fill='%23fcdc04'/><rect width='32' height='6' y='27' fill='%23d90000'/></g><text x='16' y='21' font-family='monospace' font-size='11' font-weight='bold' text-anchor='middle' fill='%23fff' stroke='%23000' stroke-width='0.8'>PTM</text></svg>">
+</head>
+<body>
+<div id="nav-mount"></div>
+
+<main>
+  <section class="section-tight">
+    <div class="wrap-wide">
+      <div class="row-between" style="flex-wrap:wrap;gap:18px">
+        <div>
+          <div class="eyebrow">Field Infrastructure</div>
+          <h1 class="h1" style="margin:10px 0 8px">IoT &amp; Embedded Systems</h1>
+          <p class="lead" style="margin:0">Cameras, radar, signal controllers, GPS units, road-surface sensors, edge compute nodes and weather stations form the field layer. Embedded firmware is written in C/C++ and talks MQTT/TLS, gRPC, Modbus and LoRaWAN.</p>
+        </div>
+        <span class="badge badge-sim">SIMULATED TELEMETRY</span>
+      </div>
+
+      <div class="kpi-strip" id="iot-kpis" style="margin-top:26px"></div>
+
+      <div class="feature-grid" id="type-grid" style="margin-top:22px"></div>
+    </div>
+  </section>
+
+  <section class="section-tight" style="padding-top:10px">
+    <div class="wrap-wide">
+      <div class="eyebrow">Embedded architecture</div>
+      <h2 class="h2" style="margin:10px 0 18px">From photon to police dashboard</h2>
+      <div class="grid" style="grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start" id="arch-grid">
+        <div class="flow" id="arch-flow" style="align-items:stretch"></div>
+        <div class="glass card">
+          <div class="panel-title" style="margin-bottom:12px">Embedded capture loop (C)</div>
+          <pre class="mono" style="margin:0;font-size:0.72rem;line-height:1.7;color:#c8d2e0;overflow-x:auto;background:rgba(0,0,0,.4);border:1px solid var(--stroke);border-radius:10px;padding:16px">/* edge camera firmware — illustrative */
+#include &lt;ptm_hal.h&gt;
+#include &lt;ptm_net.h&gt;
+
+static frame_buf_t fb;
+static mq_client_t mq;
+
+int ptm_capture_task(void *arg) {
+    (void)arg;
+    sensor_init(&amp;fb, RES_1080P, FPS_25);
+
+    while (!ptm_shutdown_requested()) {
+        if (sensor_grab(&amp;fb) != PTM_OK) {
+            watchdog_kick();
+            continue;
+        }
+        /* lightweight pre-filter on the MCU before
+           shipping to the edge AI node */
+        if (motion_delta(&amp;fb) &gt; MOTION_THRESHOLD) {
+            det_t d;
+            if (infer_local(&amp;fb, &amp;d) &amp;&amp; d.conf &gt;= 0.60f) {
+                mq_pub_detection(&amp;mq, &amp;d);
+            }
+            ring_push(&amp;evidence_ring, &amp;fb);
+        }
+        telemetry_tick(&amp;mq);   /* temp, uptime, tx rate */
+        watchdog_kick();
+        vTaskDelayUntil(&amp;fb.ts, pdMS_TO_TICKS(40));
+    }
+    return 0;
+}</pre>
+          <p class="small muted" style="margin:14px 0 0;line-height:1.6">Firmware keeps a rolling evidence ring so BEFORE frames survive the moment a violation is confirmed. Detections below the confidence threshold are published with a <span class="mono">needs_review</span> flag rather than being actioned.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight" style="padding-top:10px">
+    <div class="wrap-wide">
+      <div class="glass card" style="margin-bottom:18px">
+        <div class="row-between" style="flex-wrap:wrap;gap:12px">
+          <div class="row" style="gap:10px;flex-wrap:wrap">
+            <select class="input" id="type" style="max-width:230px"></select>
+            <select class="input" id="health" style="max-width:190px">
+              <option value="all">All health</option>
+              <option value="HEALTHY">Healthy</option>
+              <option value="DEGRADED">Degraded</option>
+              <option value="FAULT">Fault / offline</option>
+            </select>
+            <div class="search-bar" style="max-width:280px">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M10 4a6 6 0 105.2 9l4.3 4.3 1.4-1.4L16.6 11.6A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z"/></svg>
+              <input class="input" id="q" placeholder="Search device or location…">
+            </div>
+          </div>
+          <span class="small muted mono" id="count"></span>
+        </div>
+      </div>
+      <div class="glass">
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Device</th><th>Type</th><th>Location</th><th>Protocol</th><th>Power</th><th>Firmware</th><th>Uptime</th><th>Last ping</th><th>Health</th></tr></thead>
+            <tbody id="dev-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="center" style="margin-top:18px"><button class="btn btn-outline" id="more">Load more devices</button></div>
+    </div>
+  </section>
+</main>
+
+<div id="footer-mount"></div>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/iot.js"></script>
+</body>
+</html>

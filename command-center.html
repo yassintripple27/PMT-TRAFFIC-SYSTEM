@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PTM Live Traffic Command Center</title>
+<meta name="description" content="PTM Live Traffic Command Center — multi-camera video wall, Uganda live map, AI computer vision alerts and incident response.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/ptm.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><clipPath id='c'><rect width='32' height='32' rx='8'/></clipPath></defs><g clip-path='url(%23c)'><rect width='32' height='6' y='0' fill='%23151515'/><rect width='32' height='6' y='5' fill='%23fcdc04'/><rect width='32' height='6' y='11' fill='%23d90000'/><rect width='32' height='6' y='16' fill='%23151515'/><rect width='32' height='6' y='21' fill='%23fcdc04'/><rect width='32' height='6' y='27' fill='%23d90000'/></g><text x='16' y='21' font-family='monospace' font-size='11' font-weight='bold' text-anchor='middle' fill='%23fff' stroke='%23000' stroke-width='0.8'>PTM</text></svg>">
+<style>
+  .cc-topbar .wrap-wide { flex-wrap: wrap; gap: 12px; padding-block: 12px; }
+  .cc-title { display: flex; align-items: center; gap: 12px; }
+  .cc-title h1 { font-size: 1.02rem; letter-spacing: 0.14em; text-transform: uppercase; }
+  .cc-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .wall-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 14px 16px; border-bottom: 1px solid var(--stroke); }
+  .stage-wrap { position: relative; }
+  .behavior-row { display: flex; align-items: center; gap: 12px; padding: 11px 16px; border-bottom: 1px solid rgba(255,255,255,.055); }
+  .behavior-row:last-child { border-bottom: 0; }
+  .behavior-plate { font-family: var(--mono); font-size: 0.72rem; font-weight: 700; background: linear-gradient(180deg,#fff,#e6e6e6); color: #0a0a0a; padding: 3px 8px; border-radius: 4px; border: 1px solid #b9b9b9; }
+  .behavior-state { margin-left: auto; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+  .st-safe { color: var(--green); } .st-caution { color: var(--amber); } .st-possible { color: var(--amber); } .st-verified { color: var(--red); }
+  .mini-stat { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,.055); }
+  .mini-stat:last-child { border-bottom: 0; }
+  .mini-stat b { font-family: var(--mono); font-size: 1.02rem; }
+  .mini-stat span { font-size: 0.64rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--muted-2); font-weight: 700; }
+  @media (max-width: 1500px) { .wall[data-grid="12"], .wall[data-grid="16"] { grid-template-columns: repeat(4, 1fr); } }
+</style>
+</head>
+<body>
+
+<div id="nav-mount"></div>
+
+<div class="cc-shell">
+  <div class="cc-topbar">
+    <div class="wrap-wide">
+      <div class="cc-title">
+        <span class="brand-mark" style="width:32px;height:32px;font-size:0.7rem">PTM</span>
+        <div>
+          <h1>PTM Live Traffic Command Center</h1>
+          <div class="tiny muted-2 mono" style="margin-top:3px">
+            <span data-ts-live>--:--:--</span> EAT · KAMPALA OPERATIONS ROOM ·
+            <span class="badge badge-sim" style="margin-left:4px"><span class="dot"></span>Simulated feeds</span>
+          </div>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <div class="cc-controls">
+        <div class="search-bar" style="max-width:280px">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M10 4a6 6 0 105.2 9l4.3 4.3 1.4-1.4L16.6 11.6A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z"/></svg>
+          <input class="input" id="cam-search" placeholder="Search camera, road, district, status…" autocomplete="off">
+        </div>
+        <div class="btn-group" id="grid-group" role="group" aria-label="Video wall layout">
+          <button data-grid="6">6</button>
+          <button data-grid="9" class="active">9</button>
+          <button data-grid="12">12</button>
+          <button data-grid="16">16</button>
+        </div>
+        <label class="row" style="gap:8px;cursor:pointer" title="Toggle AI computer-vision overlay">
+          <span class="tiny muted-2" style="letter-spacing:.12em;font-weight:700">AI OVERLAY</span>
+          <span class="switch"><input type="checkbox" id="ai-toggle" checked><span></span></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="cc-body">
+    <div class="cc-main">
+
+      <div class="kpi-strip" id="cc-kpis"></div>
+
+      <div class="map-shell" id="cc-map" style="min-height:340px"></div>
+
+      <div class="glass">
+        <div class="wall-head">
+          <div class="panel-title">Live Video Wall <span class="muted-2 mono tiny" id="wall-count"></span></div>
+          <div class="row" style="gap:8px">
+            <span class="badge badge-live"><span class="dot"></span>Live</span>
+            <span class="badge badge-sim"><span class="dot"></span>Simulated</span>
+            <button class="btn btn-xs btn-ghost" id="wall-shuffle">Rotate feeds</button>
+          </div>
+        </div>
+        <div style="padding:10px">
+          <div class="wall" id="wall" data-grid="9"></div>
+        </div>
+      </div>
+
+      <div class="glass">
+        <div class="panel-head">
+          <div class="panel-title" id="stage-title">Focused camera</div>
+          <div class="row" style="gap:8px">
+            <button class="btn btn-xs btn-ghost" id="btn-split">Front / Rear split</button>
+            <button class="btn btn-xs btn-outline" id="btn-fullscreen">Full screen</button>
+          </div>
+        </div>
+        <div style="padding:12px">
+          <div class="stage-wrap">
+            <div class="stage" id="stage">
+              <canvas id="stage-canvas"></canvas>
+              <div class="cctv-fx"></div>
+              <div class="stage-side-hud" id="stage-hud"></div>
+              <div class="stage-controls">
+                <div class="ptz-pad" id="ptz-pad">
+                  <button data-ptz="ul" title="Pan up-left">&#8598;</button>
+                  <button data-ptz="u" title="Tilt up">&#8593;</button>
+                  <button data-ptz="ur" title="Pan up-right">&#8599;</button>
+                  <button data-ptz="l" title="Pan left">&#8592;</button>
+                  <button class="mid" data-ptz="reset" title="Reset view">RST</button>
+                  <button data-ptz="r" title="Pan right">&#8594;</button>
+                  <button data-ptz="dl" title="Pan down-left">&#8601;</button>
+                  <button data-ptz="d" title="Tilt down">&#8595;</button>
+                  <button data-ptz="dr" title="Pan down-right">&#8600;</button>
+                </div>
+                <div class="row" style="gap:6px;flex-wrap:wrap">
+                  <button class="btn btn-xs btn-ghost" data-ptz="zoomin">Zoom +</button>
+                  <button class="btn btn-xs btn-ghost" data-ptz="zoomout">Zoom &minus;</button>
+                  <button class="btn btn-xs btn-ghost" id="btn-snapshot">Snapshot</button>
+                  <button class="btn btn-xs btn-ghost" id="btn-record">Record</button>
+                  <button class="btn btn-xs btn-ghost" id="btn-maploc">Map location</button>
+                  <button class="btn btn-xs btn-danger" id="btn-report">Report incident</button>
+                </div>
+                <div class="spacer"></div>
+                <div class="tiny muted-2 mono" id="stage-meta"></div>
+              </div>
+            </div>
+          </div>
+          <div class="split-view" id="split-view" style="display:none;margin-top:10px">
+            <div class="stage"><canvas id="split-front"></canvas><div class="cctv-fx"></div><div class="cam-live-chip sim" style="top:8px;left:10px;right:auto"><i></i>FRONT</div></div>
+            <div class="stage"><canvas id="split-rear"></canvas><div class="cctv-fx"></div><div class="cam-live-chip sim" style="top:8px;left:10px;right:auto"><i></i>REAR</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+        <div class="glass">
+          <div class="panel-head"><div class="panel-title">Vehicles / minute</div><span class="badge badge-gold" id="vpm-badge">—</span></div>
+          <div class="panel-body"><div class="chart-box" id="chart-vpm"></div></div>
+        </div>
+        <div class="glass">
+          <div class="panel-head"><div class="panel-title">Motorcycles / minute</div><span class="badge badge-gold" id="mpm-badge">—</span></div>
+          <div class="panel-body"><div class="chart-box" id="chart-mpm"></div></div>
+        </div>
+        <div class="glass">
+          <div class="panel-head"><div class="panel-title">Average speed (km/h)</div><span class="badge badge-blue" id="spd-badge">—</span></div>
+          <div class="panel-body"><div class="chart-box" id="chart-spd"></div></div>
+        </div>
+      </div>
+
+      <div class="kpi-strip" id="cc-bottom-kpis"></div>
+
+    </div>
+
+    <aside class="cc-side">
+      <div class="glass" style="display:flex;flex-direction:column;min-height:0">
+        <div class="panel-head">
+          <div class="panel-title">Live AI Alerts</div>
+          <span class="badge badge-live"><span class="dot"></span><span id="alert-count">0</span></span>
+        </div>
+        <div class="alert-list" id="alert-list" style="max-height:420px"></div>
+      </div>
+
+      <div class="glass">
+        <div class="panel-head"><div class="panel-title">Driver Behaviour Analysis</div><span class="badge badge-gold" id="beh-cam">—</span></div>
+        <div id="behavior-list"></div>
+      </div>
+
+      <div class="glass">
+        <div class="panel-head"><div class="panel-title">Vehicle Search</div></div>
+        <div class="panel-body">
+          <div class="field">
+            <label for="plate-search">Registered plate number</label>
+            <input class="input mono" id="plate-search" placeholder="e.g. UAX 123B" autocomplete="off">
+          </div>
+          <button class="btn btn-outline btn-sm btn-block" id="plate-go" style="margin-top:12px">Search records</button>
+          <p class="tiny muted-2" style="margin-top:12px;line-height:1.6">
+            Results are restricted to the data your signed-in role is permitted to view.
+            Searches are written to the audit log.
+          </p>
+        </div>
+      </div>
+
+      <div class="glass">
+        <div class="panel-head"><div class="panel-title">Network Health</div></div>
+        <div id="health-list"></div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div id="footer-mount"></div>
+
+<script src="assets/js/traffic-sim.js"></script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/cc.js"></script>
+</body>
+</html>
