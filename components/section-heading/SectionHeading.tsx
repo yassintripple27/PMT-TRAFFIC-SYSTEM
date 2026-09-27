@@ -1,59 +1,87 @@
-"use client";
+import Link from "next/link";
+import { cx } from "@/lib/util";
 
-import { useState, useEffect } from "react";
-
-export interface SectionHeadingProps {
-  title: string;
-  subtitle?: string;
-  showEyebrow?: boolean;
-  eyebrowText?: string;
+export interface SectionHeaderProps {
+  /** Small label above the heading. */
+  eyebrow?: string;
+  /** Heading text. Pass an array for deliberate line breaks. */
+  title: string | string[];
+  /** Short supporting copy — one or two sentences at most. */
+  lead?: string;
+  /** Optional editorial link, placed to the right on wide layouts. */
+  action?: { label: string; href: string };
+  /** `split` puts the heading in a left column and the lead in a right one. */
+  layout?: "stack" | "split";
+  as?: "h1" | "h2";
+  headingClassName?: string;
+  className?: string;
+  children?: React.ReactNode;
 }
 
-export function SectionHeading({ 
-  title, 
-  subtitle,
-  showEyebrow = true,
-  eyebrowText = "System Purpose"
-}: SectionHeadingProps) {
-  const [visible, setVisible] = useState(false);
+const HEADING_SIZE: Record<"h1" | "h2", string> = {
+  h1: "t-display",
+  h2: "t-h1",
+};
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.3 }
-    );
-
-    const target = document.querySelector('[data-section-heading]');
-    if (target) {
-      observer.observe(target);
-    }
-  }, []);
+export function SectionHeader({
+  eyebrow,
+  title,
+  lead,
+  action,
+  layout = "stack",
+  as = "h2",
+  headingClassName,
+  className,
+  children,
+}: SectionHeaderProps) {
+  const lines = Array.isArray(title) ? title : [title];
+  const Heading = as;
+  const isSplit = layout === "split";
 
   return (
-    <div 
-      className="mb-12 fade-in"
-      style={{ transitionDelay: visible ? '0s' : '0.2s' }}
-      data-section-heading
-    >
-      {showEyebrow && (
-        <span className="eyebrow uppercase tracking-wider block mb-3">
-          {eyebrowText}
-        </span>
+    <div
+      className={cx(
+        "flex flex-col",
+        isSplit
+          ? "gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16"
+          : "gap-6",
+        className,
       )}
+    >
+      {/* Percentage rather than `ch`: display type needs room for the line
+          breaks the caller supplied, and `ch` tracks the "0" glyph. */}
+      <div className={cx(isSplit ? "lg:w-[54%] lg:shrink-0" : "max-w-[min(100%,26ch)]")}>
+        {eyebrow && <span className="eyebrow mb-7">{eyebrow}</span>}
+        <Heading className={cx(HEADING_SIZE[as], headingClassName)}>
+          {lines.map((line, i) => (
+            <span key={line} className={cx("block", i > 0 && "text-muted")}>
+              {line}
+            </span>
+          ))}
+        </Heading>
+      </div>
 
-      <h2 className="display font-extrabold text-[--heading-size] leading-[1.05] tracking-tighter">
-        {title}
-      </h2>
-
-      {subtitle && (
-        <p className="text-muted-2 text-lg mt-2">
-          {subtitle}
-        </p>
+      {(lead || action || children) && (
+        <div
+          className={cx(
+            "flex flex-col gap-7",
+            isSplit ? "lg:max-w-[46ch] lg:items-start" : "max-w-[58ch]",
+          )}
+        >
+          {lead && <p className="t-lead">{lead}</p>}
+          {children}
+          {action && (
+            <Link
+              className="arrow-link self-start"
+              href={action.href}
+            >
+              <span>{action.label}</span>
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+                <path d="M13 5l7 7-7 7-1.4-1.4L16.2 13H4v-2h12.2l-4.6-4.6z" />
+              </svg>
+            </Link>
+          )}
+        </div>
       )}
     </div>
   );

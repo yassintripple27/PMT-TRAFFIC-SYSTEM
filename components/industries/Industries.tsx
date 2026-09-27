@@ -1,4 +1,5 @@
-"use client";
+import { SectionHeader } from "@/components/section-heading/SectionHeading";
+import { Reveal } from "@/components/ui/Reveal";
 
 export interface Industry {
   key: string;
@@ -7,53 +8,46 @@ export interface Industry {
 }
 
 export interface IndustriesProps {
-  title: string;
+  eyebrow?: string;
+  title: string | string[];
+  lead?: string;
   industries: Industry[];
 }
 
-export function Industries({ 
-  title, 
-  industries 
+export function Industries({
+  eyebrow = "Deployment sectors",
+  title,
+  lead = "Corridor intelligence is commissioned by public safety, logistics and infrastructure operators across the country.",
+  industries,
 }: IndustriesProps) {
   return (
-    <section className="py-24 relative bg-bg/50">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-12">
-          <span className="eyebrow uppercase tracking-wider mb-3 block">Industries</span>
-          <h2 className="display font-extrabold text-[--heading-size] leading-[1.05] tracking-tighter">
-            {title}
-          </h2>
-        </div>
+    <section className="section section--top" id="industries">
+      <div className="shell">
+        <Reveal>
+          <SectionHeader
+            eyebrow={eyebrow}
+            title={title}
+            lead={lead}
+            layout="split"
+            className="mb-16 lg:mb-20"
+          />
+        </Reveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {industries.map((industry) => (
-            <div
-              key={industry.key}
-              className="rounded-2xl border border-stroke/50 bg-panel p-6 transition-all hover:border-gold-line hover:-translate-y-1"
-              style={{ transitionDelay: `${industries.indexOf(industry) * 0.1}s` }}
-            >
-              <div className="feature-icon mb-4">
-                <svg 
-                  viewBox="0 0 24 24" 
-                  width={24} 
-                  height={24} 
-                  fill="currentColor"
-                >
-                  <path 
-                    d="M12 3l7 3v5.5c0 4.4-3 8.2-7 9.5-4-1.3-7-5.1-7-9.5V6l7-3z" 
-                  />
-                </svg>
+        <Reveal delay={80}>
+          <div className="compact-list">
+            {industries.map((industry, index) => (
+              <div key={industry.key} className="compact-row">
+                <span className="index-row__num" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div className="compact-row__body">
+                  <h3 className="t-h3">{industry.title}</h3>
+                  <p className="t-small mt-2 max-w-[52ch]">{industry.description}</p>
+                </div>
               </div>
-
-              <h3 className="text-lg font-semibold text-text mb-1">
-                {industry.title}
-              </h3>
-              <p className="text-muted-2 text-sm line-clamp-2">
-                {industry.description}
-              </p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Reveal>
       </div>
     </section>
   );

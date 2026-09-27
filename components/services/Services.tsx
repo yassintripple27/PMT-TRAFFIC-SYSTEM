@@ -1,59 +1,84 @@
-"use client";
-
-import { useState } from "react";
-import { ServiceCard } from "@/components/services/ServiceCard";
+import Link from "next/link";
+import { SectionHeader } from "@/components/section-heading/SectionHeading";
+import { Reveal } from "@/components/ui/Reveal";
 
 export interface Service {
   id: string;
   title: string;
   description: string;
   href?: string;
-  icon?: string;
-  image?: string;
 }
 
-export function Services({ services }: { services: Service[] }) {
-  const [showMore, setShowMore] = useState(false);
+export interface ServicesProps {
+  eyebrow?: string;
+  title?: string | string[];
+  lead?: string;
+  services: Service[];
+  action?: { label: string; href: string };
+}
 
+const Arrow = () => (
+  <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true">
+    <path d="M13 5l7 7-7 7-1.4-1.4L16.2 13H4v-2h12.2l-4.6-4.6z" />
+  </svg>
+);
+
+export function Services({
+  eyebrow = "Capabilities",
+  title = ["Unified platform for", "national traffic", "surveillance"],
+  lead = "PTM connects smart cameras and IoT sensor infrastructure across Uganda to detect vehicles, analyse flow, read number plates, process violations, and empower law enforcement.",
+  services,
+  action = { label: "View all modules", href: "/command-center" },
+}: ServicesProps) {
   return (
-    <section className="py-24 bg-bg/50">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-12">
-          <span className="eyebrow mb-3">System Purpose</span>
-          <h2 className="h1 display font-extrabold tracking-tighter">
-            One platform for the whole <span className="text-gold">traffic lifecycle</span>
-          </h2>
-          <p className="lead text-muted max-w-2xl mx-auto">
-            PTM monitors roads through smart cameras and IoT devices, detects vehicles and motorcycles,
-            reads number plates, identifies configured violations, secures evidence, manages penalties and
-            gives authorised officers real-time access.
-          </p>
-        </div>
+    <section className="section section--top" id="capabilities">
+      <div className="shell">
+        <Reveal>
+          <SectionHeader
+            eyebrow={eyebrow}
+            title={title}
+            lead={lead}
+            layout="split"
+            action={action}
+            className="mb-20 lg:mb-24"
+          />
+        </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {services
-            .slice(0, showMore ? services.length : 6)
-            .map((service) => (
-              <ServiceCard
-                key={service.id}
-                title={service.title}
-                description={service.description}
-                href={service.href}
-                icon={service.icon}
-                image={service.image}
-              />
-            ))}
+        <div className="index-list">
+          {services.map((service, index) => {
+            const number = String(index + 1).padStart(2, "0");
 
-          {services.length > 6 && (
-            <div className="col-span-full mt-8 text-center">
-              <button
-                onClick={() => setShowMore(true)}
-                className="btn btn-gold w-full py-3 rounded-xl text-center"
-              >
-                View all services
-              </button>
-            </div>
-          )}
+            return (
+              <div key={service.id} className="index-row">
+                <span className="index-row__num" aria-hidden="true">
+                  {number}
+                </span>
+
+                <h3 className="index-row__title">
+                  {service.href ? (
+                    /* The ::after overlay makes the whole row the hit area
+                       while keeping the accessible name to the title alone. */
+                    <Link className="index-row__link" href={service.href}>
+                      {service.title}
+                    </Link>
+                  ) : (
+                    service.title
+                  )}
+                </h3>
+
+                <p className="index-row__body">{service.description}</p>
+
+                {service.href && (
+                  <span className="index-row__cta" aria-hidden="true">
+                    <span className="arrow-link">
+                      Explore
+                      <Arrow />
+                    </span>
+                  </span>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

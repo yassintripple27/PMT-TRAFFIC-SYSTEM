@@ -1,4 +1,5 @@
-"use client";
+import { SectionHeader } from "@/components/section-heading/SectionHeading";
+import { Reveal } from "@/components/ui/Reveal";
 
 export interface ProcessStep {
   number: number;
@@ -8,62 +9,47 @@ export interface ProcessStep {
 }
 
 export interface ProcessProps {
-  title: string;
+  title: string | string[];
+  eyebrow?: string;
+  lead?: string;
   steps: ProcessStep[];
-  subtitle?: string;
 }
 
-export function Process({ 
-  title, 
+export function Process({
+  title,
+  eyebrow = "Execution workflow",
+  lead = "From corridor planning to issued penalty, every stage is captured on one auditable record.",
   steps,
-  subtitle 
 }: ProcessProps) {
   return (
-    <section className="py-24 relative bg-bg/50">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <span className="eyebrow uppercase tracking-wider mb-3 block">How it works</span>
-          <h2 className="display font-extrabold text-[--heading-size] leading-[1.05] tracking-tighter">
-            {title}
-          </h2>
-          {subtitle && (
-            <p className="text-muted-2 text-lg mt-2">
-              {subtitle}
-            </p>
-          )}
-        </div>
+    <section className="section section--top" id="workflow">
+      <div className="shell">
+        <Reveal>
+          <SectionHeader
+            eyebrow={eyebrow}
+            title={title}
+            lead={lead}
+            layout="split"
+            className="mb-16 lg:mb-20"
+          />
+        </Reveal>
 
-        <div className="relative">
-          {/* Connecting line */}
-          <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[1px] h-full bg-stroke/50"></div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {steps.map((step, index) => (
-              <div
-                key={step.number}
-                className="flex flex-col items-center text-center relative z-10"
-                style={{ transitionDelay: `${index * 0.1}s` }}
-              >
-                <div 
-                  className="width-12 height-12 rounded-full bg-gold flex items-center justify-center"
-                  style={{
-                    margin: "0 auto 12px",
-                    border: "2px solid var(--bg)"
-                  }}
-                >
-                  <span className="text-xs font-bold text-bg">{step.number}</span>
-                </div>
-
-                <h3 className="text-lg font-bold text-text mb-1">
+        <Reveal delay={80}>
+          <ol className="phase-grid">
+            {steps.map((step) => (
+              <li key={step.number} className="phase">
+                <span className="phase__num" aria-hidden="true">
+                  {String(step.number).padStart(2, "0")}
+                </span>
+                <h3 className="phase__title">
                   {step.title}
+                  {step.subtitle && <span className="sr-only"> — {step.subtitle}</span>}
                 </h3>
-                <p className="text-muted-2 text-sm">
-                  {step.description}
-                </p>
-              </div>
+                <p className="phase__body">{step.description}</p>
+              </li>
             ))}
-          </div>
-        </div>
+          </ol>
+        </Reveal>
       </div>
     </section>
   );

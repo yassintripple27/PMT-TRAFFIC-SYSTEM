@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { cx } from "@/lib/util";
 
 export interface HeroImage {
   src: string;
@@ -13,160 +14,117 @@ export interface HeroImage {
 
 export interface HeroProps {
   title: string;
+  /** Deliberate line breaks for the display headline. Falls back to `title`. */
+  titleLines?: string[];
   subtitle: string;
   image?: HeroImage;
+  /** Overlaid on the media in the top-left corner. */
+  tag?: string;
+  /** Editorial caption anchored to the bottom-left of the media. */
+  caption?: string;
+  eyebrow?: string;
   primaryCtaText: string;
   primaryCtaHref: string;
   secondaryCtaText?: string;
   secondaryCtaHref?: string;
+  metrics?: { value: string; label: string }[];
 }
 
-export function Hero({ 
-  title, 
-  subtitle, 
-  image, 
-  primaryCtaText, 
-  primaryCtaHref, 
+const HERO_METRICS = [
+  { value: "248", label: "Cameras connected" },
+  { value: "17", label: "Districts covered" },
+  { value: "204", label: "IoT sensors online" },
+  { value: "9", label: "AI vision models" },
+];
+
+const Arrow = () => (
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+    <path d="M13 5l7 7-7 7-1.4-1.4L16.2 13H4v-2h12.2l-4.6-4.6z" />
+  </svg>
+);
+
+export function Hero({
+  title,
+  titleLines,
+  subtitle,
+  image,
+  tag,
+  caption,
+  eyebrow = "Republic of Uganda · National traffic intelligence",
+  primaryCtaText,
+  primaryCtaHref,
   secondaryCtaText,
-  secondaryCtaHref 
+  secondaryCtaHref,
+  metrics = HERO_METRICS,
 }: HeroProps) {
-  const [visible, setVisible] = useState(false);
-  const headlineRef = useRef<HTMLHeadingElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.3 }
-    );
-
-    if (headlineRef.current) {
-      observer.observe(headlineRef.current);
-    }
-  }, []);
+  const lines = titleLines?.length ? titleLines : [title];
+  const lastIndex = lines.length - 1;
 
   return (
-    <section className="relative min-h-[70vh] bg-bg overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0" 
-             style={{ 
-               background: "radial-gradient(1100px 620px at 12% -8%, rgba(255, 201, 60, 0.09), transparent 60%), radial-gradient(900px 560px at 92% 4%, rgba(59, 167, 255, 0.07), transparent 62%), radial-gradient(1000px 700px at 50% 110%, rgba(255, 77, 77, 0.05), transparent 60%)" 
-             }} />
-        <div className="absolute inset-0 bg-gradient-to-b from-bg/80 via-bg/80 to-bg/80" />
-      </div>
+    <section className="hero">
+      <div className="shell">
+        <div className="hero__grid">
+          <div className="hero__text">
+            <span className="eyebrow mb-9">{eyebrow}</span>
 
-      {/* Image area */}
-      {image && (
-        <div className="absolute inset-0">
-          <Image
-            src={image.src}
-            alt={image.alt}
-            width={image.width}
-            height={image.height}
-            fill
-            priority
-            className="object-cover"
-          />
-        </div>
-      )}
+            <h1 className="t-hero hero__lines">
+              {lines.map((line, i) => (
+                <span key={line} className={cx(i === lastIndex && "text-muted")}>
+                  {line}
+                </span>
+              ))}
+            </h1>
 
-      {/* Hero inner */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 flex flex-col items-center justify-center text-center">
-        <div className="eyebrow mb-4">Republic of Uganda · National Traffic Intelligence Prototype</div>
+            <p className="t-lead mt-10 max-w-[48ch]">{subtitle}</p>
 
-        <h1 
-          ref={headlineRef}
-          className="display mb-6 font-extrabold text-[--heading-size] leading-[1.05] tracking-tighter text-text"
-        >
-          {title}
-        </h1>
+            <div className="mt-11 flex flex-wrap items-center gap-x-8 gap-y-5">
+              <Link className="btn btn--lg" href={primaryCtaHref}>
+                <span>{primaryCtaText}</span>
+                <Arrow />
+              </Link>
 
-        <p className="lead mb-8 text-muted max-w-2xl">
-          {subtitle}
-        </p>
+              {secondaryCtaText && secondaryCtaHref && (
+                <Link className="arrow-link" href={secondaryCtaHref}>
+                  <span>{secondaryCtaText}</span>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+                    <path d="M13 5l7 7-7 7-1.4-1.4L16.2 13H4v-2h12.2l-4.6-4.6z" />
+                  </svg>
+                </Link>
+              )}
+            </div>
+          </div>
 
-        <div className="hero-actions mb-12 flex flex-wrap items-center justify-center gap-4">
-          <a
-            href={primaryCtaHref}
-            className="btn btn-gold"
-          >
-            <svg 
-              viewBox="0 0 24 24" 
-              width="16" 
-              height="16" 
-              fill="currentColor"
-            >
-              <path d="M8 5v14l11-7z" />
-            </svg>
-            {primaryCtaText}
-          </a>
+          {image && (
+            <div className="hero__media">
+              {tag && (
+                <span className="hero__tag">
+                  <span className="pulse" aria-hidden="true" />
+                  {tag}
+                </span>
+              )}
 
-          {secondaryCtaText && secondaryCtaHref && (
-            <a
-              href={secondaryCtaHref}
-              className="btn btn-outline"
-            >
-              <svg 
-                viewBox="0 0 24 24" 
-                width="16" 
-                height="16" 
-                fill="currentColor"
-              >
-                <path d="M4 7h11v10H4zm11 3l5-3v10l-5-3z" />
-              </svg>
-              {secondaryCtaText}
-            </a>
+              <div className="hero__figure">
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  priority={image.priority ?? true}
+                  sizes="(min-width: 1024px) 48vw, 100vw"
+                />
+              </div>
+
+              {caption && <span className="media__caption">{caption}</span>}
+            </div>
           )}
         </div>
 
-        {/* Hero stats */}
-        <div className="hero-stats mt-auto flex gap-2 justify-center">
-          <div className="hero-stat">
-            <b data-count="248" className="font-mono font-extrabold">
-              {visible ? "248" : "0"}
-            </b>
-            <span>Cameras connected</span>
-          </div>
-          <div className="hero-stat">
-            <b data-count="17" className="font-mono font-extrabold">
-              {visible ? "17" : "0"}
-            </b>
-            <span>Districts covered</span>
-          </div>
-          <div className="hero-stat">
-            <b data-count="204" className="font-mono font-extrabold">
-              {visible ? "204" : "0"}
-            </b>
-            <span>IoT devices online</span>
-          </div>
-          <div className="hero-stat">
-            <b data-count="9" className="font-mono font-extrabold">
-              {visible ? "9" : "0"}
-            </b>
-            <span>AI vision modules</span>
-          </div>
-        </div>
-
-        {/* Notice */}
-        <div className="notice mt-8 max-w-2xl text-center px-4">
-          <svg 
-            viewBox="0 0 24 24" 
-            width="17" 
-            height="17" 
-            fill="currentColor"
-          >
-            <path d="M12 2L1 21h22L12 2zm1 14h-2v2h2v-2zm0-7h-2v5h2V9z" />
-          </svg>
-          <div>
-            <b>Demonstration prototype.</b> Every camera feed, detection, plate, incident and fine shown on this
-            site is generated locally by the PTM simulation engine. No live Ugandan government or police camera
-            is accessed, and no real personal data is displayed.
-          </div>
+        <div className="hero__metrics">
+          {metrics.map((metric) => (
+            <div key={metric.label} className="hero__metric">
+              <p className="hero__metric-value">{metric.value}</p>
+              <p className="hero__metric-label">{metric.label}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
